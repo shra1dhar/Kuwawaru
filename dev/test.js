@@ -21,10 +21,10 @@ const currentBlockData = [
       recipient: 'Arnav'
    }
 ];
-const nounce = 100;
 
+console.log(bitcoin.proofOfWork(previousBlockHash, currentBlockData));
 
-console.log(bitcoin.hashBlock(previousBlockHash, currentBlockData, nounce));
+// console.log(bitcoin.hashBlock(previousBlockHash, currentBlockData, nounce));
 
 
 // console.log(bitcoin.chain[1]); 

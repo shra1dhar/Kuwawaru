@@ -55,6 +55,18 @@ Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, n
 }
 
 
+// Proof of Work Method
+// Caculates and returns the correct nounce value for which the hash will have '000' in the beginning
+Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData) {
+   let nounce = 0;
+   let hash = this.hashBlock(previousBlockHash, currentBlockData, nounce)
+   while(hash.substring(1,3) != '00') {
+      nounce++;
+      hash = this.hashBlock(previousBlockHash, currentBlockData, nounce);
+   }
+   return nounce;
+}
+
 
 // Export Constructor function to test.js
 module.exports = Blockchain;

@@ -62,4 +62,21 @@ app.get('/mine', (req, res) => {
    })
 });
 
+// register a new node and broadcast it to the network
+app.post('/register-and-broadcast-node', (req, res) => {
+   const newNodeUrl = req.body.newNodeUrl;
+});
+
+// Broadcasted new Node will come to other nodes.
+// This shouldn't be again broadcasted to avoid congestion.
+// Hence it will just just register it without broadcasting.
+app.post('/register-node', (req, res) => {
+
+});
+
+// register multiple nodes at once
+app.post('/register-node-bulk', (res, req) => {
+
+});
+
 app.listen(port, () => console.log('Listening to port ' + port));

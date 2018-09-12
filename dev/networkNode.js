@@ -5,6 +5,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const Blockchain = require('./blockchain');
 const uuid = require('uuid/v1');    // creates unique random strings for us
+const port = process.argv[2];       // in packet.json, at index 2 is port 3001
 
 
 const nodeAddress = uuid().split("-").join(""); //removing dashes for unique string
@@ -61,4 +62,4 @@ app.get('/mine', (req, res) => {
    })
 });
 
-app.listen(3000, () => console.log('Listening to port 3000...'));
+app.listen(port, () => console.log('Listening to port ' + port));

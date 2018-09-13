@@ -77,7 +77,7 @@ app.post('/register-and-broadcast-node', (req, res) => {
       const requestOptions = {
          uri: networkNodeUrl + '/register-node',
          method: 'POST',
-         body: { newNodeUrl },
+         body: { newNodeUrl: newNodeUrl },
          json: true
       };
       // async requests are sent to all nodes and their result is stored in regNodesPromises array.
@@ -89,7 +89,7 @@ app.post('/register-and-broadcast-node', (req, res) => {
    const bulkRegisterOptions = {    // creating a new Object
          uri: newNodeUrl + '/register-nodes-bulk',
          method: 'POST',
-         body: { allNetworkNodes : [ ...bitcoin.networkNodes, bitcoin.currentNewNodeUrl] }, //using spread operator because we don't want an array of array but instead a spread out array.
+         body: { allNetworkNodes: [ ...bitcoin.networkNodes, bitcoin.currentNodeUrl] }, //using spread operator because we don't want an array of array but instead a spread out array.
          json: true
       };
       return rp(bulkRegisterOptions);
@@ -118,15 +118,17 @@ app.post('/register-node', (req, res) => {
 
 // register multiple nodes at once
 // this end point is hit only on a new node  
-app.post('/register-node-bulk', (res, req) => {
-   const allnetworkNodes = req.body.allNetworkNodes;
+app.post('/register-nodes-bulk', (req, res) => {
+   const allNetworkNodes = req.body.allNetworkNodes;
    allNetworkNodes.forEach(networkNodeUrl => {
-      const nodeNotAlreadyPresent = bitcon.networkNodes.indexOf(networkNodeUrl) == -1;    //node is already present
+      const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(networkNodeUrl) == -1;    //node is already present
       const notCurrentNode = bitcoin.currentNodeUrl !== networkNodeUrl;
       //register each network url on the new node
-      if (nodeNotAlreadyPresent)
+      if (nodeNotAlreadyPresent && notCurrentNode)
          bitcoin.networkNodes.push(networkNodeUrl);
    });
+
+   res.json({ note: "Bulk registration successful"});
 });
 
 app.listen(port, () => console.log('Listening to port ' + port));

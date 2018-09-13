@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const Blockchain = require('./blockchain');
 const uuid = require('uuid/v1');    // creates unique random strings for us
 const port = process.argv[2];       // in packet.json, at index 2 is port 3001
-const rp = require('/request-promise');
+const rp = require('request-promise'); //install both request and request-promise library to work with it.
 
 
 const nodeAddress = uuid().split("-").join(""); //removing dashes for unique string
@@ -101,7 +101,6 @@ app.post('/register-and-broadcast-node', (req, res) => {
 });   
 
 
-
 // Broadcasted new Node will come to other nodes.
 // This shouldn't be again broadcasted to avoid congestion.
 // Hence it will just just register it without broadcasting.
@@ -116,9 +115,18 @@ app.post('/register-node', (req, res) => {
    res.json({ note: 'New node registered successfully.'});     // success msg
 });
 
-// register multiple nodes at once
-app.post('/register-node-bulk', (res, req) => {
 
+// register multiple nodes at once
+// this end point is hit only on a new node  
+app.post('/register-node-bulk', (res, req) => {
+   const allnetworkNodes = req.body.allNetworkNodes;
+   allNetworkNodes.forEach(networkNodeUrl => {
+      const nodeNotAlreadyPresent = bitcon.networkNodes.indexOf(networkNodeUrl) == -1;    //node is already present
+      const notCurrentNode = bitcoin.currentNodeUrl !== networkNodeUrl;
+      //register each network url on the new node
+      if (nodeNotAlreadyPresent)
+         bitcoin.networkNodes.push(networkNodeUrl);
+   });
 });
 
 app.listen(port, () => console.log('Listening to port ' + port));

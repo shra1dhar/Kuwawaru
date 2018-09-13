@@ -8,7 +8,7 @@ function Blockchain() {
 
    // Having access to current url
    this.currentNewNodeUrl = currentNodeUrl;
-   this.networlNodes = [];
+   this.networkNodes = [];
 
    // Genesis Block
    this.createNewBlock(100, 'dummy1', 'dummy2');

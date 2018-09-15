@@ -66,11 +66,11 @@ app.get('/mine', (req, res) => {
 // register a new node and broadcast it to the network
 app.post('/register-and-broadcast-node', (req, res) => {
    const newNodeUrl = req.body.newNodeUrl;
-   if (bitcoin.networkNodes.indexOf(newNodeUrl == -1))      // if the newNodeUrl isn't already present in the array
+   if (bitcoin.networkNodes.indexOf(newNodeUrl) == -1)      // if the newNodeUrl isn't already present in the array
       bitcoin.networkNodes.push(newNodeUrl);                // add it in the array
 
    //array of promises
-   const regnodesPromises = []; 
+   const regNodesPromises = []; 
    bitcoin.networkNodes.forEach(networkNodeUrl => {
       // register node
       // we have to make request to every other node. We will use request-promise dependency to do that.
@@ -86,7 +86,7 @@ app.post('/register-and-broadcast-node', (req, res) => {
    
    Promise.all(regNodesPromises)
    .then(data => {
-   const bulkRegisterOptions = {    // creating a new Object
+      const bulkRegisterOptions = {    // creating a new Object
          uri: newNodeUrl + '/register-nodes-bulk',
          method: 'POST',
          body: { allNetworkNodes: [ ...bitcoin.networkNodes, bitcoin.currentNodeUrl] }, //using spread operator because we don't want an array of array but instead a spread out array.
@@ -97,7 +97,9 @@ app.post('/register-and-broadcast-node', (req, res) => {
 
    .then(data => {
       res.json({ note: 'New node registered with network successfully'});
-   });
+   }) 
+
+   .catch(err => console.log(err));
 });   
 
 

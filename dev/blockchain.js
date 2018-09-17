@@ -7,7 +7,7 @@ function Blockchain() {
    this.pendingTransactions = [];    // new transactions will be here
 
    // Having access to current url
-   this.currentNewNodeUrl = currentNodeUrl;
+   this.currentNodeUrl = currentNodeUrl;
    this.networkNodes = [];
 
    // Genesis Block

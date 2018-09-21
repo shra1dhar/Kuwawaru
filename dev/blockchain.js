@@ -1,5 +1,6 @@
 const sha256 = require("sha256");
 const currentNodeUrl = process.argv[3];
+const uuid = require('uuid/v1');    // creates unique random strings for us
 
 // constructor function
 function Blockchain() {
@@ -43,17 +44,26 @@ Blockchain.prototype.createNewTransaction = function(amount, sender, recipient) 
    const newTransaction = {      //Transaction Object
       amount: amount,
       sender: sender,
-      recipient: recipient
+      recipient: recipient,
+      transactionId: uuid().split('-').join('')
    };
 
    // Push this new transaction into the newTransaction array that we created earlier
    // Note: Different people will try to do transactions and this array will hold that info. When a transaction reaches this array, 
    // it isn't recorded in our blockchain yet (these are pending transactions). It is recorded only when a new block is created/mined. 
-   this.pendingTransaction.push(newTransaction); 
+   
+   // this.pendingTransaction.push(newTransaction); 
 
+   // return this.getLastBlock()['index'] + 1;
+
+   return newTransaction;
+};
+
+// takes a transaction obj which is already created and pushes it.
+Blockchain.prototype.addTransactionToPendingTransacions = function(transactionObj) {
+   this.pendingTransaction.push(transactionObj);
    return this.getLastBlock()['index'] + 1;
-}
-
+};
 
 // Hashing the block data   
 Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, nounce) {

@@ -132,5 +132,5 @@ app.post('/register-nodes-bulk', (req, res) => {
 
    res.json({ note: "Bulk registration successful"});
 });
-
+``
 app.listen(port, () => console.log('Listening to port ' + port));

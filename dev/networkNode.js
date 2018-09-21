@@ -27,10 +27,34 @@ app.get('/blockchain', (req, res) => {
 // Were supposed to send data to this end point
 app.post('/transaction', (req, res) => {
 
-   // create newTransaction returns to us the block number to which our new transaction wil be added to.
-   // req.body is the body which we are sending to this endpoint using post request.
-   const blockIndex = bitcoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
-   res.json({ note: `Transaction will be added in block ${blockIndex}.` });   // used backstick quotes and not normal quotes. 
+   // during broadcast we will hit this end point
+   //sending new transaction as data here and adding it to the pendingTransaction array.
+   const newTransaction = req.body;
+   const blockIndex = bitcoin.addTransactionToPendingTransacions(newTransaction);
+   res.json({ note: `Transaction will be added in block ${blockIndex}.`});
+});
+
+app.post('/transaction/broadcast', (req, res) => {
+      const newTransaction = bitcoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
+      bitcoin.addTransactionToPendingTransacions(newTransaction);
+
+      // broadcast
+      const requestPromises = [];
+      bitcoin.networkNodes.forEach(networkNodeUrl => {
+            const requestOption = {
+                  uri: networkNodeUrl + '/transaction',
+                  method: 'POST',
+                  body: newTransaction,
+                  json:true
+            };
+            requestPromises.push(rp(requestOptions));
+      });
+
+      //run all requests
+      Promise.all(requestPromises)
+      .then(data => {
+            res.json({ note: "transaction created and braoadcast successfully"});
+      });
 });
 
 app.get('/mine', (req, res) => {

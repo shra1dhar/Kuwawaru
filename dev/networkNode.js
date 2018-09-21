@@ -1,5 +1,4 @@
 // This file works as a node
-
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -41,7 +40,7 @@ app.post('/transaction/broadcast', (req, res) => {
       // broadcast
       const requestPromises = [];
       bitcoin.networkNodes.forEach(networkNodeUrl => {
-            const requestOption = {
+            const requestOptions = {
                   uri: networkNodeUrl + '/transaction',
                   method: 'POST',
                   body: newTransaction,

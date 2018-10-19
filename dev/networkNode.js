@@ -75,15 +75,46 @@ app.get('/mine', (req, res) => {
    // sending reward to whosoever sucessfully mined a block
    // currently in bitcoin reward for mining a block is 12.5 Bitcoin, so we kept the reward same here
    // we have kept the sending address as "00". So whenever there will be a transaction from "00", we will know that it is a reward.
-   bitcoin.createNewTransaction(12.5, "00", nodeAddress);
+//    bitcoin.createNewTransaction(12.5, "00", nodeAddress);
+                  // the mabove method was removed and placed somewhere else
 
    const newBlock = bitcoin.createNewBlock(nounce, previousBlockHash, blockHash);
 
-   // sending response to whosoever mined this block
-   res.json({
-      "note": "New Block mined sucessfully",
-      block: newBlock
+   const requestPromises = [];
+   bitcoin.networkNodes.forEach(networkNodeUrl => {
+      const requestOptions = {
+            uri: networkNodeUrl + '/receive-new-block',
+            method: 'POST',
+            body: { newBlock: newBlock }, // the block newly created
+            json: true
+      };
+
+      requestPromises.push(rp(requestOptions))
+   });
+
+   Promise.all(requestPromises)
+   .then(data => {
+      const requestOptions = {
+            uri: bitcoin.currentNodeUrl + '/transaction/broadcast',
+            method: 'POST',
+            body: {
+                  amount: 12.5,
+                  sender: "00",
+                  recipient: nodeAddress
+            },
+            json: true
+      };      
+
+      return rp(requestOptions);
    })
+
+   .then(data => {
+      // sending response to whosoever mined this block
+      res.json({
+            note: "New Block mined and broadcasted successfully",
+            block: newBlock
+      });   
+   });
 });
 
 // register a new node and broadcast it to the network
